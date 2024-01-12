@@ -36,8 +36,10 @@ function initPopup(){
     if(popup){
         let input = popup.querySelector("input#url");
         let  redirect = popup.querySelector("input#redirect");
+        let error = popup.querySelector(".error-message");
         document.querySelectorAll(".pop-open").forEach(btn=>{
             btn.addEventListener("click", ()=>{
+                error.innerHTML = "";
                 !popup.classList.contains("active") ? (popup.classList.add("active")) : null;
                 if(btn.hasAttribute("data-404")){
                     input.closest("label").classList.add("disabled");

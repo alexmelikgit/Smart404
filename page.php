@@ -3,7 +3,7 @@
     $sm404->set_scripts();
 ?>
 <div class="container container-main">
-    <h1>Smart 404</h1>
+    <h1><?=__("Smart 404", "smart404")?></h1>
     <div class="wrapper">
         <div class="top-bar-wrapper">
             <div class="icon-block">
@@ -11,8 +11,8 @@
                     <i class="far fa-home"></i>
                 </div>
                 <div class="icon-text">
-                    <h5 class="title-item">404 Statistic's</h5>
-                    <span class="text-item">The chart shows statistics filtered for specific insights.</span>
+                    <h5 class="title-item"><?=__("404 Statistic's", "smart404")?></h5>
+                    <span class="text-item"><?=__("The chart shows statistics filtered for specific insights.", "smart404")?></span>
                 </div>
             </div>
         </div>
@@ -21,17 +21,17 @@
             <div class="graphics-wrapper loading">
                 <div class="top-wrapper">
                     <div class="next-back-wrapper">
-                        <button class="btn back">Back</button>
-                        <button class="btn next">Next</button>
+                        <button class="btn back"><?=__("Back", "smart404")?></button>
+                        <button class="btn next"><?=__("Next", "smart404")?></button>
                     </div>
                     <div class="month-week-switcher switcher-wrapper">
-                        <span>Month</span>
+                        <span><?=__("Month", "smart404")?></span>
                         <button class="week-btn switcher"></button>
-                        <span>Week</span>
+                        <span><?=__("Week", "smart404")?></span>
                     </div>
                     <div class="month-picker">
                         <input type="month" class="month-filter">
-                        <button class="btn filter-reset">Reset</button>
+                        <button class="btn filter-reset"><?=__("Reset", "smart404")?></button>
                     </div>
                 </div>
 
@@ -42,7 +42,7 @@
                 <div class="total-pages total-item">
                     <div class="total-wrapper">
                         <span class="result-title">
-                            Redirected Pages Count
+                            <?=__("Redirected Pages Count", "smart404")?>
                         </span>
                         <span class="total-result"><?=$sm404->get_total_pages()?></span>
                     </div>
@@ -57,7 +57,7 @@
                 <div class="total-redirects total-item">
                     <div class="total-wrapper">
                         <span class="result-title">
-                            Redirects count
+                            <?=__("Redirects count", "smart404")?>
                         </span>
                         <span class="total-result"><?=$sm404->get_total_redirects()?></span>
                     </div>
@@ -76,8 +76,8 @@
                 <i class="far fa-route"></i>
             </div>
             <div class="icon-text">
-                <h5 class="title-item">Auto Redirects</h5>
-                <span class="text-item">Automatically routes users to alternative pages or URLs, enhancing navigation and user experience.</span>
+                <h5 class="title-item"><?=__("Auto Redirects", "smart404")?></h5>
+                <span class="text-item"><?=__("Automatically routes users to alternative pages or URLs, enhancing navigation and user experience.", "smart404")?></span>
             </div>
         </div>
 
@@ -86,9 +86,9 @@
                    <table class="panel-item" id="auto_redirects">
                        <thead>
                            <tr>
-                               <th>404 url</th>
-                               <th>Redirect url</th>
-                               <th>Total redirects</th>
+                               <th><?=__("404 url", "smart404")?></th>
+                               <th><?=__("Redirect url", "smart404")?></th>
+                               <th><?=__("Total redirects", "smart404")?></th>
                                <th></th>
                            </tr>
                        </thead>
@@ -99,7 +99,7 @@
                                 <td><?=$redirect["404"]?></td>
                                 <td><?=$redirect["redirect"]?></td>
                                 <td><?=$redirect["total_autoRedirects"]?></td>
-                                <td><button class="btn edit-btn panel-btn pop-open" data-404="<?=$redirect["404"]?>">Add Custom Redirect</button></td>
+                                <td><button class="btn edit-btn panel-btn pop-open" data-404="<?=$redirect["404"]?>"><?=__("Add Custom Redirect", "smart404")?></button></td>
                             </tr>
                             <?php endforeach; ?>
                        </tbody>
@@ -114,8 +114,8 @@
                 <i class="far fa-route"></i>
             </div>
             <div class="icon-text">
-                <h5 class="title-item">Custom Redirects</h5>
-                <span class="text-item">Redirects Initiated by admin</span>
+                <h5 class="title-item"><?=__("Custom Redirects", "smart404")?></h5>
+                <span class="text-item"><?=__("Redirects Initiated by admin", "smart404")?></span>
             </div>
         </div>
 
@@ -124,10 +124,10 @@
                 <table class="panel-item" id="custom_redirects">
                     <thead>
                     <tr>
-                        <th>404 url</th>
-                        <th>Redirect url</th>
-                        <th>Total redirects</th>
-                        <th><button class="panel-btn btn btn-blue pop-open">Add New Redirect <i class="fa fa-plus"></i></button></th>
+                        <th><?=__("404 url", "smart404")?></th>
+                        <th><?=__("Redirect url", "smart404")?></th>
+                        <th><?=__("Total redirects", "smart404")?></th>
+                        <th><button class="panel-btn btn btn-blue pop-open"><?=__("Add New Redirect", "smart404")?> <i class="fa fa-plus"></i></button></th>
                     </tr>
                     </thead>
                     <?php if(is_array($redirects = CustomRedrects::getRedirects())) :?>
@@ -139,8 +139,8 @@
                                     <td><?=$redirect["total_customRedirects"]?></td>
                                     <td>
                                         <div class="custom_redirect-btns">
-                                            <button class="btn pop-open" data-404="<?=$redirect["404"]?>" data-redirect="<?=$redirect["redirect"]?>">Edit</button>
-                                            <button class="btn remove-btn">Remove Redirect</button>
+                                            <button class="btn pop-open" data-404="<?=$redirect["404"]?>" data-redirect="<?=$redirect["redirect"]?>"><?=__("Edit", "smart404")?></button>
+                                            <button class="btn remove-btn"><?=__("Remove Redirect", "smart404")?></button>
                                         </div>
                                     </td>
                                 </tr>
@@ -157,8 +157,8 @@
                 <i class="far fa-exclamation-triangle"></i>
             </div>
             <div class="icon-text">
-                <h5 class="title-item">404 Watchlist: Redirect Targets</h5>
-                <span class="text-item">Tracks URLs that yield 404 errors, indicating the need for redirection to relevant pages.</span>
+                <h5 class="title-item"><?=__("404 Watchlist: Redirect Targets", "smart404")?></h5>
+                <span class="text-item"><?=__("Tracks URLs that yield 404 errors, indicating the need for redirection to relevant pages.", "smart404")?></span>
             </div>
         </div>
         <div class="graphics-container needing-container">
@@ -166,8 +166,8 @@
                     <table class="panel-item" id="404">
                         <thead>
                             <tr>
-                                <th>404 URL</th>
-                                <th>Total</th>
+                                <th><?=__("404 URL", "smart404")?></th>
+                                <th><?=__("Total", "smart404")?></th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -177,7 +177,7 @@
                             <tr>
                                 <td><?=$needle["404"]?></td>
                                 <td><?=$needle["total"]?></td>
-                                <td><button class="btn pop-open panel-btn" data-404="<?=$needle["404"]?>">Add Redirect</button></td>
+                                <td><button class="btn pop-open panel-btn" data-404="<?=$needle["404"]?>"><?=__("Add Redirect", "smart404")?></button></td>
                             </tr>
                         <?php endforeach; endif; ?>
                         </tbody>
@@ -189,14 +189,14 @@
                     <form action="#" method="POST" class="redirects-form">
                         <span class="error-message"></span>
                         <label for="url">
-                            <span>404 URL</span>
+                            <span><?=__("404 URL", "smart404")?></span>
                             <input id="url" type="text" name="url" id="" data-url>
                         </label>
                         <label for="redirect">
-                            <span>Redirect</span>
+                            <span><?=__("Redirect", "smart404")?></span>
                             <input type="text" name="redirect" id="redirect" data-url>
                         </label>
-                        <button class="btn">Add <i class="fa fa-plus"></i></button>
+                        <button class="btn"><?=__("Add", "smart404")?> <i class="fa fa-plus"></i></button>
                     </form>
                 </div>
         </div>
