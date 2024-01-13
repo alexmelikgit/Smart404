@@ -50,7 +50,7 @@
         }
         private function get_redriects(){
             global $wpdb;
-            return $wpdb->get_results("SELECT * FROM `smart404_redirects` WHERE `total_autoRedirects` > 0", ARRAY_A);
+            return $wpdb->get_results("SELECT * FROM `smart404_redirects` WHERE `total_autoRedirects` > 0 ORDER BY -`redirect` ASC", ARRAY_A);
         }
         static function getRedrects(){
             return AutoRedirects::$obj->get_redriects();
@@ -81,9 +81,9 @@
                     if(!Redirects::is_url($_POST[$key]))wp_die("$key is not valid url");
                 }
                 if($exist){
-                    $wpdb->update("smart404_redirects", ["redirect" => $redirect, "auto_redirect" => false], ["404" => $url] );
+                    $wpdb->update("smart404_redirects", ["redirect" => $redirect ? : NULL], ["404" => $url] );
                 }else{
-                    $wpdb->insert("smart404_redirects", ["404" => $url , "redirect" => $redirect, 'auto_redirect' => false ]);
+                    $wpdb->insert("smart404_redirects", ["404" => $url , "redirect" => $redirect]);
                 }
             wp_die();
         }

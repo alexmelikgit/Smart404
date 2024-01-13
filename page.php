@@ -89,15 +89,15 @@
                                <th><?=__("404 url", "smart404")?></th>
                                <th><?=__("Redirect url", "smart404")?></th>
                                <th><?=__("Total redirects", "smart404")?></th>
-                               <th></th>
+                               <th data-orderable="false"></th>
                            </tr>
                        </thead>
-                       <?php $autoRedirects = new AutoRedirects(); if(is_array($redirects = $autoRedirects->getRedrects())) :?>
+                       <?php $autoRedirects = new AutoRedirects(); if(is_array($redirects = $autoRedirects->getRedrects())) : ?>
                        <tbody>
                             <?php foreach ($redirects as $redirect) : ?>
-                            <tr class="<?=$redirect["auto_redirect"] == 0 ? "disabled \" title='Auto redirect is disabled because you added a custom redirect'" : ""?>">
+                            <tr class="<?=$redirect["redirect"] != NULL  ? "disabled \" title='Auto redirect is disabled because you added a custom redirect'" : ""?>">
                                 <td><?=$redirect["404"]?></td>
-                                <td><?=$redirect["redirect"]?></td>
+                                <td><?=$redirect["auto_redirect"]?></td>
                                 <td><?=$redirect["total_autoRedirects"]?></td>
                                 <td><button class="btn edit-btn panel-btn pop-open" data-404="<?=$redirect["404"]?>"><?=__("Add Custom Redirect", "smart404")?></button></td>
                             </tr>
@@ -127,7 +127,7 @@
                         <th><?=__("404 url", "smart404")?></th>
                         <th><?=__("Redirect url", "smart404")?></th>
                         <th><?=__("Total redirects", "smart404")?></th>
-                        <th><button class="panel-btn btn btn-blue pop-open"><?=__("Add New Redirect", "smart404")?> <i class="fa fa-plus"></i></button></th>
+                        <th data-orderable="false"><button class="panel-btn btn btn-blue pop-open"><?=__("Add New Redirect", "smart404")?> <i class="fa fa-plus"></i></button></th>
                     </tr>
                     </thead>
                     <?php if(is_array($redirects = CustomRedrects::getRedirects())) :?>
@@ -168,13 +168,13 @@
                             <tr>
                                 <th><?=__("404 URL", "smart404")?></th>
                                 <th><?=__("Total", "smart404")?></th>
-                                <th></th>
+                                <th data-orderable="false"></th>
                             </tr>
                         </thead>
                         <tbody>
                         <?php $needles = $sm404->get_needle() ; if(is_array($needles) ):?>
-                        <?php foreach($needles as $needle) : ?>
-                            <tr>
+                        <?php foreach($needles as $needle) : var_dump($needle["disabled"]);?>
+                            <tr class="<?=$needle["disabled"] ? "disabled" : ""?>">
                                 <td><?=$needle["404"]?></td>
                                 <td><?=$needle["total"]?></td>
                                 <td><button class="btn pop-open panel-btn" data-404="<?=$needle["404"]?>"><?=__("Add Redirect", "smart404")?></button></td>

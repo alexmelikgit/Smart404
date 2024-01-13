@@ -23,7 +23,7 @@ function initTables(){
         if(table.id ){
             let id = "#" + table.id;
             try{
-                new Smart404_datatables(table,new DataTable(id));
+                new Smart404_datatables(table,new DataTable(id, {"order" : []}));
             }catch(e){
                 console.log(e.message)
             }

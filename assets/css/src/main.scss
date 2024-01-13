@@ -189,6 +189,8 @@
     background-color: white;
     border-radius: 8px;
     padding: 25px;
+    min-width: fit-content;
+    width: 350px;
     .redirects-form{
       .error-message{
         margin-bottom: 8px;

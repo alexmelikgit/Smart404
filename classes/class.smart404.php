@@ -17,6 +17,15 @@
         static function plugin_uninstall(){
             if(Smart404::option_exists("Smart404")){
                 update_option("Smart404", false);
+                ?>
+                    <div class="container">
+                        <h1>Title</h1>
+                        <button>Yes</button>
+                        <button>No</button>
+                    </div>
+
+                    <?php
+                wp_die();
             }
         }
 
@@ -54,7 +63,7 @@
                         if(xml.readyState === 4){
                             if(xml.status === 200){
                                 if(/(?:https?):\/\/(\w+:?\w*)?(\S+)(:\d+)?(\/|\/([\w#!:.?+=&%!\-\/]))?/.test(xml.responseText)){
-                                    window.location = xml.responseText
+                                    // window.location = xml.responseText
                                 }
                             }
                         }
@@ -88,8 +97,8 @@
         //creating smart404 table in sql
         public function create_table(){
             global $wpdb;
-            $wpdb->query("CREATE TABLE IF NOT EXISTS `smart404_urls`(`404` VARCHAR(255), `auto_redirect` BOOLEAN, `has_redirect` BOOLEAN, `date` DATETIME default current_timestamp, `referer` BOOLEAN) ");
-            $wpdb->query("CREATE TABLE IF NOT EXISTS `smart404_redirects`(`404` VARCHAR(255), `redirect` VARCHAR(255), `auto_redirect` BOOLEAN, `total_autoRedirects` int(11) DEFAULT 0,`total_customRedirects` INT(11) DEFAULT 0)");
+            $wpdb->query("CREATE TABLE IF NOT EXISTS `smart404_urls`(`404` VARCHAR(255), `auto_redirect` VARCHAR(255), `has_redirect` BOOLEAN, `date` DATETIME default current_timestamp, `referer` BOOLEAN) ");
+            $wpdb->query("CREATE TABLE IF NOT EXISTS `smart404_redirects`(`404` VARCHAR(255), `redirect` VARCHAR(255), `auto_redirect` VARCHAR(255), `total_autoRedirects` int(11) DEFAULT 0,`total_customRedirects` INT(11) DEFAULT 0)");
             $wpdb->query("CREATE TABLE IF NOT EXISTS `smart404_configs`(`config_key` VARCHAR(16), `config_value` VARCHAR(8000))");
             if(!$wpdb->get_var("SELECT `config_key` FROM `smart404_configs` WHERE `config_key` = 'post_types'")){
                 $wpdb->insert("smart404_configs", ["config_key" => "post_types", "config_value" => '["post", "page"]']);
@@ -99,13 +108,14 @@
             global $wpdb;
                 $_POST["url"] = $_POST["url"] ? urldecode($_POST["url"]) : null;
                 $url = $_POST["url"] ?? "";
-                $result = $wpdb->get_results("SELECT `redirect` FROM `smart404_redirects` WHERE `404` = \"$url\" AND `auto_redirect` = 0", ARRAY_A);
+                $result = $wpdb->get_results("SELECT `redirect` FROM `smart404_redirects` WHERE `404` = \"$url\" AND `redirect` != ''", ARRAY_A);
                 ob_clean();
                 ob_start();
                 if(is_array($result) && count($result)){
-                    echo $result[0]['redirect'];
+                    $redirect = $result[0]['redirect'];
+                    echo $redirect;
                     echo ob_get_clean();
-                    $wpdb->query("UPDATE `smart404_redirects` SET `total_customRedirects` = `total_customRedirects` + 1 WHERE `404` = '$url' AND `auto_redirect` = 0");
+                    $wpdb->query("UPDATE `smart404_redirects` SET `total_customRedirects` = `total_customRedirects` + 1 WHERE `404` = '$url' AND `redirect` = '$redirect'");
                     $this->insert_404();
                     die();
                 }else if(($_POST["is_404"] ?? false) && get_option("sm404_autoredirect")){
@@ -128,14 +138,15 @@
 
             if(count(Sm404settings::get_active_post_tpes())){
                 $url = $_POST["url"] ?? "";
-                $redirect = $this->search_links();
-                $redirect =  is_array($redirect) ? $redirect[0] : null ;
+                $redirect = $wpdb->get_var("SELECT `auto_redirect` FROM `smart404_redirects` WHERE `redirect` = NULL AND `404` = '$url' AND `auto_redirect` != ''");
+                $redirect = $redirect ? : $this->search_links();
+                $redirect =  is_array($redirect) ? $redirect[0] : $redirect ;
                 if($redirect) {
                     echo($redirect);
-                    if($wpdb->get_var("SELECT `404` FROM `smart404_redirects` WHERE `404` = '$url' AND `redirect` = '$redirect' AND `auto_redirect` = true")){
-                        $wpdb->query("UPDATE `smart404_redirects` SET `total_autoRedirects` = `total_autoRedirects` + 1 WHERE `404` = '$url' AND `redirect` = '$redirect' AND `auto_redirect` = true");
+                    if($wpdb->get_var("SELECT `404` FROM `smart404_redirects` WHERE `404` = '$url' AND `auto_redirect` = '$redirect' AND `redirect` IS NULL")){
+                        $wpdb->query("UPDATE `smart404_redirects` SET `total_autoRedirects` = `total_autoRedirects` + 1 WHERE `404` = '$url' AND `redirect` IS NULL AND `auto_redirect` = '$redirect'");
                     }else{
-                        $wpdb->insert("smart404_redirects", ["404" => $url, "redirect" => $redirect, "auto_redirect" => true, "total_autoRedirects" => 1]);
+                        $wpdb->insert("smart404_redirects", ["404" => $url, "auto_redirect" => $redirect, "total_autoRedirects" => 1]);
                     }
                 }
             }
@@ -146,24 +157,18 @@
             global $wpdb;
             $referer = isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : false;
             $url = $_POST["url"] ?? "";
-            $redirect = $this->search_links();
-            $redirect = is_array($redirect) ? $redirect[0] : null;
-            $autoredirect = get_option("sm404_autoredirect") === "1" && !is_string($wpdb->get_var("SELECT `auto_redirect` FROM `smart404_redirects` WHERE `404` = \"$url\" AND `auto_redirect` = \"0\"") );
+            $redirect = $wpdb->get_var("SELECT `redirect` FROM `smart404_redirects` WHERE `redirect` IS NOT NULL AND `404` = '$url'");
+            $autoredirect = get_option("sm404_autoredirect") === "1" && !is_string($wpdb->get_var("SELECT `auto_redirect` FROM `smart404_redirects` WHERE `404` = \"$url\" AND `auto_redirect` = ''") );
             if(!$redirect && get_option("auto_redirect") == "1"){
-                $links = $this->search_links();
-                $redirect = is_array($links) ? $links[0] : null;
+                $redirect = $wpdb->get_var("SELECT `auto_redirect` FROM `smart404_redirects` WHERE `auto_redirect` IS NOT NULL AND `redirect` IS NULL");
             }
-
             $wpdb->insert("smart404_urls", ["404" => $url, "has_redirect" => $redirect !== null, "auto_redirect" => $autoredirect, "referer" => $referer]);
             if($redirect == null){
                 $sendMail = (int)$wpdb->get_var("SELECT COUNT(`404`) FROM `smart404_urls` WHERE `404` = '$url' AND `has_redirect` = 0");
-                if($sendMail > 15){
+                if($sendMail === 15){
                     $this->send_mail($url);
                 }
             }
-
-//            $updateCol = $autoredirect == "true" ? "total_autoRedirects" : "total_customRedirects" ;
-//            $wpdb->query("UPDATE `smart404_redirects` SET `$updateCol` = `$updateCol` + 1 WHERE `404` = '$url' AND `redirect` = '$redirect' AND `auto_redirect` = $autoredirect");
         }
         //sending mail
         private function send_mail($url){
@@ -220,10 +225,8 @@
                         }
                         return $permalinks;
                     }
-
                 }
             }
-
             return null;
         }
         //returning string for sql request for auto redirect
@@ -279,10 +282,13 @@
                 if(!in_array($result[404], $hasRedirect)){
                     $needle[] = [
                         "404" => $result[404],
-                        "total" => $wpdb->get_var("SELECT COUNT(`404`) FROM `smart404_urls` WHERE `has_redirect` = 0 AND `404` = \"$result[404]\"")
+                        "total" => $wpdb->get_var("SELECT COUNT(`404`) FROM `smart404_urls` WHERE `has_redirect` = 0 AND `404` = \"$result[404]\""),
+                        "disabled" => $wpdb->get_var("SELECT `404` FROM `smart404_redirects` WHERE `404` = '$result[404]' AND (`redirect` != '' OR `auto_redirect` != '')")
                     ];
                 }
             }
+            $key_values = array_column($needle, 'disabled');
+            array_multisort($key_values, SORT_ASC, $needle);
             return $needle;
         }
         public function import_all_classes(){
