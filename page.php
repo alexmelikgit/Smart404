@@ -173,7 +173,7 @@
                         </thead>
                         <tbody>
                         <?php $needles = $sm404->get_needle() ; if(is_array($needles) ):?>
-                        <?php foreach($needles as $needle) : var_dump($needle["disabled"]);?>
+                        <?php foreach($needles as $needle) :?>
                             <tr class="<?=$needle["disabled"] ? "disabled" : ""?>">
                                 <td><?=$needle["404"]?></td>
                                 <td><?=$needle["total"]?></td>
