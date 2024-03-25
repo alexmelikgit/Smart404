@@ -49,32 +49,7 @@
                     require_once S404_DIR . "settings-page.php";
                 });
             });
-            add_action("template_redirect", function (){
-                ?>
-                <script>
-                    const xml = new XMLHttpRequest();
-                    const data = new FormData();
-                    data.append("action", "sm404_get_redirect");
-                    data.append("url","<?=$this->get_url()?>");
-                    data.append("is_404", "<?=is_404()?>");
-                    xml.open("POST", "<?=admin_url() . "admin-ajax.php"?>", true);
-                    xml.send(data);
-                    xml.onreadystatechange = ()=>{
-                        if(xml.readyState === 4){
-                            if(xml.status === 200){
-                                if(/(?:https?):\/\/(\w+:?\w*)?(\S+)(:\d+)?(\/|\/([\w#!:.?+=&%!\-\/]))?/.test(xml.responseText)){
-                                    // window.location = xml.responseText
-                                }
-                            }
-                        }
-                    }
-
-                    <?php
-
-                    ?>
-                </script>
-                <?php
-            });
+            add_action("template_redirect", [$this, "custom_redirect"]);
             add_action("wp_ajax_sm404_get_redirect", [$this, "custom_redirect"]);
             add_action("wp_ajax_nopriv_sm404_get_redirect", [$this, "custom_redirect"]);
             $this->create_table();
@@ -106,28 +81,21 @@
         }
         public function custom_redirect(){
             global $wpdb;
-                $_POST["url"] = $_POST["url"] ? urldecode($_POST["url"]) : null;
-                $url = $_POST["url"] ?? "";
+                $url = $this->get_url();
                 $result = $wpdb->get_results("SELECT `redirect` FROM `smart404_redirects` WHERE `404` = \"$url\" AND `redirect` != ''", ARRAY_A);
-                ob_clean();
-                ob_start();
+                $redirect = null;
                 if(is_array($result) && count($result)){
                     $redirect = $result[0]['redirect'];
-                    echo $redirect;
-                    echo ob_get_clean();
                     $wpdb->query("UPDATE `smart404_redirects` SET `total_customRedirects` = `total_customRedirects` + 1 WHERE `404` = '$url' AND `redirect` = '$redirect'");
                     $this->insert_404();
-                    die();
-                }else if(($_POST["is_404"] ?? false) && get_option("sm404_autoredirect")){
-                    $this->auto_redirect();
-                    echo ob_get_clean();
+                }else if(is_404() && get_option("sm404_autoredirect")){
                     $this->insert_404();
-                    die();
+                    $redirect = $this->auto_redirect();
                 }
-            if($_POST["is_404"]){
+            if(is_404()){
                 $this->insert_404();
             }
-                wp_die();
+            wp_redirect($redirect);
         }
         private function get_url(){
             return (empty($_SERVER['HTTPS']) ? 'http' : 'https') . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
@@ -137,26 +105,27 @@
             global $wpdb;
 
             if(count(Sm404settings::get_active_post_tpes())){
-                $url = $_POST["url"] ?? "";
+                $url = $this->get_url();
                 $redirect = $wpdb->get_var("SELECT `auto_redirect` FROM `smart404_redirects` WHERE `redirect` = NULL AND `404` = '$url' AND `auto_redirect` != ''");
                 $redirect = $redirect ? : $this->search_links();
                 $redirect =  is_array($redirect) ? $redirect[0] : $redirect ;
                 if($redirect) {
-                    echo($redirect);
                     if($wpdb->get_var("SELECT `404` FROM `smart404_redirects` WHERE `404` = '$url' AND `auto_redirect` = '$redirect' AND `redirect` IS NULL")){
                         $wpdb->query("UPDATE `smart404_redirects` SET `total_autoRedirects` = `total_autoRedirects` + 1 WHERE `404` = '$url' AND `redirect` IS NULL AND `auto_redirect` = '$redirect'");
                     }else{
                         $wpdb->insert("smart404_redirects", ["404" => $url, "auto_redirect" => $redirect, "total_autoRedirects" => 1]);
                     }
+                    return $redirect;
                 }
             }
+            return null;
 
         }
         //after finding 404 url, inserting to db
         private function insert_404(){
             global $wpdb;
             $referer = isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : false;
-            $url = $_POST["url"] ?? "";
+            $url = $this->get_url();
             $redirect = $wpdb->get_var("SELECT `redirect` FROM `smart404_redirects` WHERE `redirect` IS NOT NULL AND `404` = '$url'");
             $autoredirect = get_option("sm404_autoredirect") === "1" && !is_string($wpdb->get_var("SELECT `auto_redirect` FROM `smart404_redirects` WHERE `404` = \"$url\" AND `auto_redirect` = ''") );
             if(!$redirect && get_option("auto_redirect") == "1"){
@@ -199,7 +168,7 @@
         public function search_links(){
             if(!count($postTypes = Sm404settings::get_active_post_tpes()))return null;
             global $wpdb;
-            $url  = parse_url($_POST["url"], PHP_URL_PATH); // gives "/pwsdedtech"
+            $url  = parse_url($this->get_url(), PHP_URL_PATH); // gives "/pwsdedtech"
             $url = urldecode($url);
             $url = preg_split("/\//", $url);
             foreach ($url as $value){
