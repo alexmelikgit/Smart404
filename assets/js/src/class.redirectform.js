@@ -22,6 +22,7 @@ export class RedirectForm{
         })
         this.inputs.forEach(input=>{
             input.addEventListener("input", ()=>{
+                input.value = decodeURI(input.value);
                 this.urlValidation(input);
             })
             this.urlValidation(input);

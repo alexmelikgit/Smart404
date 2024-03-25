@@ -24,7 +24,7 @@
         $date = json_decode(stripslashes($_POST["date"]), ARRAY_A);
         $start = $date["start"];
         $end = $date["end"] . " 23:59:59";
-        $results = $wpdb->get_results("SELECT DISTINCT(DATE_FORMAT(`date`, '%Y-%m-%d')) as x, COUNT(*) as y FROM `smart404_urls` WHERE has_redirect = 1 AND `date` BETWEEN '$start' AND '$end' GROUP BY DATE_FORMAT(`date`, '%Y-%m-%d') ORDER BY y DESC;",ARRAY_A);
+        $results = $wpdb->get_results("SELECT DISTINCT(DATE_FORMAT(`date`, '%Y-%m-%d')) as x, COUNT(*) as y FROM `smart404_urls` WHERE (has_redirect = 1 OR `auto_redirect` = 1) AND `date` BETWEEN '$start' AND '$end' GROUP BY DATE_FORMAT(`date`, '%Y-%m-%d') ORDER BY y DESC;",ARRAY_A);
         $day = strtotime($start);
         $data = [];
         while($day <= strtotime($end)){

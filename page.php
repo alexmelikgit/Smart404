@@ -96,8 +96,8 @@
                        <tbody>
                             <?php foreach ($redirects as $redirect) : ?>
                             <tr class="<?=$redirect["redirect"] != NULL  ? "disabled \" title='Auto redirect is disabled because you added a custom redirect'" : ""?>">
-                                <td><?=$redirect["404"]?></td>
-                                <td><?=$redirect["auto_redirect"]?></td>
+                                <td><?=urldecode($redirect["404"])?></td>
+                                <td><?=urldecode($redirect["auto_redirect"])?></td>
                                 <td><?=$redirect["total_autoRedirects"]?></td>
                                 <td><button class="btn edit-btn panel-btn pop-open" data-404="<?=$redirect["404"]?>"><?=__("Add Custom Redirect", "smart404")?></button></td>
                             </tr>
@@ -130,12 +130,12 @@
                         <th data-orderable="false"><button class="panel-btn btn btn-blue pop-open"><?=__("Add New Redirect", "smart404")?> <i class="fa fa-plus"></i></button></th>
                     </tr>
                     </thead>
-                    <?php if(is_array($redirects = CustomRedrects::getRedirects())) :?>
+                    <?php if(is_array($redirects = CustomRedrects::getRedirects())) :;?>
                         <tbody>
                             <?php foreach ($redirects as $redirect) : ?>
                                 <tr>
-                                    <td><?=$redirect["404"]?></td>
-                                    <td><?=$redirect["redirect"]?></td>
+                                    <td><?=urldecode($redirect["404"])?></td>
+                                    <td><?=urldecode($redirect["redirect"])?></td>
                                     <td><?=$redirect["total_customRedirects"]?></td>
                                     <td>
                                         <div class="custom_redirect-btns">
@@ -175,7 +175,7 @@
                         <?php $needles = $sm404->get_needle() ; if(is_array($needles) ):?>
                         <?php foreach($needles as $needle) :?>
                             <tr class="<?=$needle["disabled"] ? "disabled" : ""?>">
-                                <td><?=$needle["404"]?></td>
+                                <td><?=urldecode($needle["404"])?></td>
                                 <td><?=$needle["total"]?></td>
                                 <td><button class="btn pop-open panel-btn" data-404="<?=$needle["404"]?>"><?=__("Add Redirect", "smart404")?></button></td>
                             </tr>

@@ -8,7 +8,6 @@
         }
         //Redirects class initializing
         private function init(){
-            @ini_set("display_errors", true);
             $this->set_hooks();
         }
         //set all Hooks
@@ -89,7 +88,7 @@
         }
         private function get_redirects(){
             global $wpdb;
-            return $wpdb->get_results("SELECT * FROM `smart404_redirects` WHERE `auto_redirect` = 0 AND `redirect` != \"\"", ARRAY_A);
+            return $wpdb->get_results("SELECT * FROM `smart404_redirects` WHERE (`auto_redirect` != '1' OR `auto_redirect` is NULL) AND `redirect` != \"\"", ARRAY_A);
         }
         public static function getRedirects(){
             return CustomRedrects::$obj->get_redirects();
