@@ -43,6 +43,7 @@
                     require_once S404_DIR . "settings-page.php";
                 });
             });
+            add_action("admin_enqueue_scripts", [$this, "set_scripts"]);
             add_action("template_redirect", [$this, "custom_redirect"]);
             add_action("wp_ajax_sm404_get_redirect", [$this, "custom_redirect"]);
             add_action("wp_ajax_nopriv_sm404_get_redirect", [$this, "custom_redirect"]);
@@ -56,7 +57,6 @@
             if($page){
                 global $sm404;
                 $sm404 = new Smart404();
-                $sm404->set_scripts();
                 if($subpage){
                     require_once S404_DIR . "subpages/$subpage.php";
                 }else{
@@ -251,23 +251,26 @@
         }
         //setting all css and js assets
         public function set_scripts(){
-            wp_enqueue_script("chart", S404_URL . "/assets/js/dist/chart.js", [], "1.0.0", true);
-            wp_enqueue_script("chartjs-date", S404_URL . "/assets/js/dist/chartjs-date.min.js", [], "1.0.0", true);
-            wp_enqueue_script("datatables", S404_URL . "/assets/js/dist/datatables.min.js", [], "1.0.0", true);
-            wp_enqueue_style("datatables", S404_URL . "/assets/css/dist/jquery.dataTables.min.css", [], "1.0.0");
-            wp_enqueue_script("smart-main", S404_URL . "/assets/js/dist/main.js", ["chart"], "1.0.2", true);
-            wp_enqueue_style("smart-main", S404_URL . "/assets/css/dist/all-styles.css", [], "1.0.0");
-            wp_enqueue_style('awesome-font', S404_URL .  '/assets/css/src/addons/font-awesome.min.css', array(), '1.0.0');
-            add_filter('script_loader_tag', 'add_type_attribute' , 10, 3);
-            function add_type_attribute($tag, $handle, $src) {
-                // if not your script, do nothing and return original $tag
-                if ( 'smart-main' !== $handle ) {
-                    return $tag;
-                }
-                // change the script tag by adding type="module" and return it.
-                $tag = '<script type="module" src="' . esc_url( $src ) . '"></script>';
+            if(isset($_GET["page"]) && $_GET["page"] == "s404"){
+                wp_enqueue_script("chart", S404_URL . "/assets/js/dist/chart.js", [], "1.0.0", true);
+                wp_enqueue_script("chartjs-date", S404_URL . "/assets/js/dist/chartjs-date.min.js", [], "1.0.0", true);
+                wp_enqueue_script("datatables", S404_URL . "/assets/js/dist/datatables.min.js", [], "1.0.0", true);
+                wp_enqueue_style("datatables", S404_URL . "/assets/css/dist/jquery.dataTables.min.css", [], "1.0.0");
+                wp_enqueue_script("smart-main", S404_URL . "/assets/js/dist/main.js", ["chart"], "1.0.2", true);
+                wp_enqueue_style("smart-main", S404_URL . "/assets/css/dist/all-styles.css", [], "1.0.0");
+                wp_enqueue_style('awesome-font', S404_URL .  '/assets/css/src/addons/font-awesome.min.css', array(), '1.0.0');
+            }
+            add_filter('script_loader_tag', [$this,"add_type_attribute"] , 10, 3);
+
+        }
+        function add_type_attribute($tag, $handle, $src) {
+            // if not your script, do nothing and return original $tag
+            if ( 'smart-main' !== $handle ) {
                 return $tag;
             }
+            // change the script tag by adding type="module" and return it.
+            $tag = '<script type="module" src="' . esc_url( $src ) . '"></script>';
+            return $tag;
         }
         //get all redirect needed urls
         public function get_needle(){
