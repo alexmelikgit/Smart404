@@ -128,6 +128,7 @@
                         <th><?=__("404 url", "smart404")?></th>
                         <th><?=__("Redirect url", "smart404")?></th>
                         <th><?=__("Total redirects", "smart404")?></th>
+                        <th><?=__("Redirect Type", "smart404")?></th>
                         <th data-orderable="false"><button class="panel-btn btn btn-blue pop-open"><?=__("Add New Redirect", "smart404")?> <i class="fa fa-plus"></i></button></th>
                     </tr>
                     </thead>
@@ -138,6 +139,7 @@
                                     <td><?=urldecode($redirect["404"])?></td>
                                     <td><?=urldecode($redirect["redirect"])?></td>
                                     <td><?=$redirect["total_customRedirects"]?></td>
+                                    <td><?=$redirect["redirect_type"]?></td>
                                     <td>
                                         <div class="custom_redirect-btns">
                                             <button class="btn pop-open" data-404="<?=$redirect["404"]?>" data-redirect="<?=$redirect["redirect"]?>"><?=__("Edit", "smart404")?></button>

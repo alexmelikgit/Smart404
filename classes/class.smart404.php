@@ -16,15 +16,10 @@
         //uninstalling plugin
         static function plugin_uninstall(){
             if(Smart404::option_exists("Smart404")){
-                update_option("Smart404", false);
-                ?>
-                    <div class="container">
-                        <h1>Title</h1>
-                        <button>Yes</button>
-                        <button>No</button>
-                    </div>
+                global $wpdb;
 
-                    <?php
+                update_option("Smart404", false);
+                $wpdb->query("DROP TABLE `smart404_configs`, `smart404_redirects`, `smart404_urls`; ");
                 wp_die();
             }
         }
@@ -97,7 +92,7 @@
         public function custom_redirect(){
             global $wpdb;
                 $url = $this->get_url();
-                $result = $wpdb->get_results("SELECT `redirect` FROM `smart404_redirects` WHERE `404` = \"$url\" AND `redirect` != ''", ARRAY_A);
+                $result = $wpdb->get_results("SELECT `redirect`, `redirect_type` FROM `smart404_redirects` WHERE `404` = \"$url\" AND `redirect` != ''", ARRAY_A);
                 $redirect = null;
                 if(is_array($result) && count($result)){
                     $redirect = $result[0]['redirect'];
