@@ -32,7 +32,7 @@
             }
             return $postTypes;
         }
-        public static function get_active_post_tpes(){
+        public static function get_active_post_types(){
             global $wpdb;
             $result = $wpdb->get_var("SELECT `config_value` FROM `smart404_configs` WHERE `config_key` = 'post_types'");
             if($result){

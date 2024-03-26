@@ -36,7 +36,7 @@
                     </tr>
                 </thead>
                     <tbody>
-                        <?php $actives = Sm404settings::get_active_post_tpes();foreach ($settings->get_post_types() as $post_type) : ?>
+                        <?php $actives = Sm404settings::get_active_post_types();foreach ($settings->get_post_types() as $post_type) : ?>
                             <tr>
                                 <td data-key><?=$post_type?></td>
                                 <td><div class="switcher-wrapper"><?=__("No", "smart404")?><div class="switcher <?=in_array($post_type, $actives) ? "active" : ""?>"></div><?=__("Yes", "smart404")?></div></td>

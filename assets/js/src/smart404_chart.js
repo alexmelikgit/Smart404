@@ -7,6 +7,8 @@ export class Smart404_chart{
         }
         this.wrapper = this.canvas.closest(".graphics-wrapper");
         this.configs = {};
+        this.redirectType = this.canvas.closest("[data-redirect-type]");
+        this.redirectType = this.redirectType ? this.redirectType.getAttribute('data-redirect-type') : null;
         this.init();
     }
     init(){
@@ -223,6 +225,7 @@ export class Smart404_chart{
         const data = new FormData();
         data.append("action", "smart404_getdata");
         data.append("date", JSON.stringify(date));
+        data.append("redirect_type", this.redirectType);
         const response = await fetch(ajaxurl, {
             body: data,
             method : "POST"

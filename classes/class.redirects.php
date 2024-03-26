@@ -80,7 +80,7 @@
                     if(!Redirects::is_url($_POST[$key]))wp_die("$key is not valid url");
                 }
                 if($exist){
-                    $wpdb->update("smart404_redirects", ["redirect" => $redirect ? : NULL], ["404" => $url] );
+                    $wpdb->update("smart404_redirects", ["redirect" => $redirect ? : NULL, "redirect_type" => (int)$_POST["redirect_type"] ?? 301], ["404" => $url] );
                 }else{
                     $wpdb->insert("smart404_redirects", ["404" => $url , "redirect" => $redirect]);
                 }

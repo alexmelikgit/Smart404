@@ -1,6 +1,5 @@
 <?php
-    $sm404 = new Smart404();
-    $sm404->set_scripts();
+    global $sm404;
 ?>
 <div class="container container-main">
     <h1><?=__("Smart 404", "smart404")?></h1>
@@ -71,14 +70,15 @@
                 </div>
             </div>
         </div>
+        <?php if(get_option("sm404_autoredirect") === "1") : ?>
         <div class="icon-block">
-            <div class="icon-item">
+            <a href="<?=home_url("wp-admin/admin.php?page=s404&subpage=auto_redirects")?>" class="icon-item">
                 <i class="far fa-route"></i>
-            </div>
-            <div class="icon-text">
+            </a>
+            <a href="<?=home_url("wp-admin/admin.php?page=s404&subpage=auto_redirects")?>" class="icon-text">
                 <h5 class="title-item"><?=__("Auto Redirects", "smart404")?></h5>
                 <span class="text-item"><?=__("Automatically routes users to alternative pages or URLs, enhancing navigation and user experience.", "smart404")?></span>
-            </div>
+            </a>
         </div>
 
             <div class="graphics-container">
@@ -109,14 +109,15 @@
                 </div>
 
             </div>
+        <?php endif ;?>
         <div class="icon-block">
-            <div class="icon-item">
+            <a href="<?=home_url("wp-admin/admin.php?page=s404&subpage=custom_redirects")?>" class="icon-item" >
                 <i class="far fa-route"></i>
-            </div>
-            <div class="icon-text">
+            </a>
+            <a href="<?=home_url("wp-admin/admin.php?page=s404&subpage=custom_redirects")?>" class="icon-text">
                 <h5 class="title-item"><?=__("Custom Redirects", "smart404")?></h5>
                 <span class="text-item"><?=__("Redirects Initiated by admin", "smart404")?></span>
-            </div>
+            </a>
         </div>
 
         <div class="graphics-container">
@@ -195,6 +196,16 @@
                         <label for="redirect">
                             <span><?=__("Redirect", "smart404")?></span>
                             <input type="text" name="redirect" id="redirect" data-url>
+                        </label>
+                        <label for="redirectType">
+                            <span><?=__("Redirect Type", "smart404")?></span>
+                            <select name="redirect_type" id="redirectType">
+                                <option value="301"><?="301 " . __("Moved Permanently", "smart404")?></option>
+                                <option value="302"><?="302 " . __("Found", "smart404")?></option>
+                                <option value="307"><?="307 " . __("Temporary Redirect", "smart404")?></option>
+                                <option value="410"><?="410 " . __("Content Deleted", "smart404")?></option>
+                                <option value="451"><?="451 " . __("Unavailable for Legal Reasons", "smart404")?></option>
+                            </select>
                         </label>
                         <button class="btn"><?=__("Add", "smart404")?> <i class="fa fa-plus"></i></button>
                     </form>
